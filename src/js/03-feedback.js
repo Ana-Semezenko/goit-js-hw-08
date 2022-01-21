@@ -12,8 +12,6 @@ const storage = 'feedback-form-state';
 const userData = {};
 
 
-// Перевіряємо наявність даних у сховищі, заповнюємо форму
-
 if (localStorage[storage]) {
 
     const userLocalData = JSON.parse(localStorage[storage]);
@@ -22,7 +20,6 @@ if (localStorage[storage]) {
     refs.inputMessage.value = userLocalData.message;
 }
 
-// Записуємо вхідні дані з input в сховище з затримкою
 
 refs.feedbackForm.addEventListener('input', throttle(onFormInput, 500));
 
@@ -37,7 +34,6 @@ function onFormInput(event) {
     });
 }
 
-// При сабміті виводимо дані в консоль і очищуємо сховище та форму
 
 refs.feedbackForm.addEventListener('submit', onFormSubmit);
 
