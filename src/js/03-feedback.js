@@ -1,40 +1,45 @@
 import throttle from 'lodash.throttle';
 
 const refs = {
-    form: document.querySelector('.feedback-form'),
-    input: document.querySelector("input"),
-    textarea: document.querySelector("textarea"),
-};
+    feedbackForm: document.querySelector('.feedback-form'),
+    inputEmail: document.querySelector("input"),
+    inputMessage: document.querySelector("textarea"),
+    userSubmit: document.querySelector("button"),
+}
 
 
 const storage = 'feedback-form-state';
-const formData = {};
+const userData = {};
 
+
+// Перевіряємо наявність даних у сховищі, заповнюємо форму
 
 if (localStorage[storage]) {
 
     const userLocalData = JSON.parse(localStorage[storage]);
 
-    refs.input.value = userLocalData.email;
-    refs.textarea.value = userLocalData.message;
-};
+    refs.inputEmail.value = userLocalData.email;
+    refs.inputMessage.value = userLocalData.message;
+}
 
+// Записуємо вхідні дані з input в сховище з затримкою
 
-refs.form.addEventListener('input', throttle(onFormInput, 500));
+refs.feedbackForm.addEventListener('input', throttle(onFormInput, 500));
 
 function onFormInput(event) {
-    const userData = new FormData(refs.form);
+    const formData = new FormData(refs.feedbackForm);
 
-    userData.forEach((value, name) => {
+    formData.forEach((value, name) => {
 
         userData[name] = value;
-        localStorage.setItem(storage, JSON.stringify(formData));
+        localStorage.setItem(storage, JSON.stringify(userData));
 
     });
-};
+}
 
+// При сабміті виводимо дані в консоль і очищуємо сховище та форму
 
-refs.form.addEventListener('submit', onFormSubmit);
+refs.feedbackForm.addEventListener('submit', onFormSubmit);
 
 function onFormSubmit(event) {
 
@@ -45,6 +50,6 @@ function onFormSubmit(event) {
 
     localStorage.clear();
 
-    refs.input.value = "";
-    refs.textarea.value = "";
-};
+    refs.inputEmail.value = "";
+    refs.inputMessage.value = "";
+}
