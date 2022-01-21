@@ -1,36 +1,50 @@
-import throttle from "lodash.throttle";
+import throttle from 'lodash.throttle';
 
-const formData = {};
 const refs = {
-    form: document.querySelector(".feedback-form"),
-    input: document.querySelector(".feedback-form input"),
-    textarea: document.querySelector(".feedback-form textarea"),
+    form: document.querySelector('.feedback-form'),
+    input: document.querySelector("input"),
+    textarea: document.querySelector("textarea"),
 };
 
-populateTextInput();
 
-refs.form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    e.target.reset();
-    localStorage.removeItem("feedback-form-state");
-    console.log(formData);
-});
+const storage = 'feedback-form-state';
+const formData = {};
 
-refs.form.addEventListener("input", throttle((e) => {
-    formData[e.target.name] = e.target.value;
-    localStorage.setItem("feedback-form-state", JSON.stringify(formData))
-}, 500))
 
-function populateTextInput() {
+if (localStorage[storage]) {
 
-    const userData = JSON.parse(localStorage.getItem("feedback-form-state"));
+    const userLocalData = JSON.parse(localStorage[storage]);
 
-    if(userData && Object.values(userData) !== [ ] ) {
+    refs.input.value = userLocalData.email;
+    refs.textarea.value = userLocalData.message;
+};
 
-        refs.input.value = userData.email;
-        refs.textarea.value = userData.message;
-        formData.email = userData.email;
-        formData.message = userData.message;
 
-    }
-}
+refs.form.addEventListener('input', throttle(onFormInput, 500));
+
+function onFormInput(event) {
+    const userData = new FormData(refs.form);
+
+    userData.forEach((value, name) => {
+
+        userData[name] = value;
+        localStorage.setItem(storage, JSON.stringify(formData));
+
+    });
+};
+
+
+refs.form.addEventListener('submit', onFormSubmit);
+
+function onFormSubmit(event) {
+
+    event.preventDefault();
+
+    const userLocalData = JSON.parse(localStorage[storage]);
+    console.log(userLocalData);
+
+    localStorage.clear();
+
+    refs.input.value = "";
+    refs.textarea.value = "";
+};
